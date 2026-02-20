@@ -1,0 +1,157 @@
+タイムスタンプ,日付,名前,部署,今週の作業内容,来週の作業予定,会社への要望・意見
+17:44:45,2026/01/23,@Ryoki Chiba,Other,"・Interpreted for meetings
+・Job posting
+・Agent search, scheduling apointments","・Interpreting and translation work
+・Communication with recruiters
+・Research on other recruiters","Posted job openings, but views are low and although there have been CV submissions, they don't meet the criteria.Requested multiple agents to post the JDs but response has been poor; postings still not live and no candidate referrals yet."
+18:46:17,2026/01/23,@Rajendra Kishan,Development,"Researched about SDXL's capabilities & IP_adapters(image style) usage.
+Proof Read Documentations of TAAS backend.
+Bugs Fixes in Deployed Website","Finalizing TT's SDXL Performance on Image Quality
+Finalizing Batch Processing feature on TAAS application.
+Research about Optimizing the LLM inference.",None
+18:46:23,2026/01/23,@Kaid Vishwa,Operation,"Completed a good part of the manual.
+Entered some new entries to our CMS.
+Fixed some issues relating to creating tickets within Slack, and other misc. tasks related to Hubspot.","Actually completing the manual, depends.
+Double-checking the permissions inside the CMS, making sure no issues could come up in our pipeline.
+Going though our website templates.","RAG, as in the RAG part of the manual. While yes, the manual is supposed to be for non-techies, by the end it was starting to look like a textbook. So I just focused on the steps of embedding, reranking an generating. It should be enough."
+18:54:20,2026/01/23,@Samantha,Operation,"-Translation work at PMO on UF weekly report and compiling TT meeting minutes etc
+-Collecting 10+ skill profiles for AI Engineers and forwarding to Dave.
+-Meetings PM, TT","-Brainstorming session with Dave
+-Observing come available cutting-edge AI applications and its computational tasks
+-Upcoming work on translations and preparing notes in English on meetings' content",Not see specially for the moment.
+19:04:01,2026/01/23,@Misaki Hagio,Operation,"給与支払い登録と日繰り更新
+ICDA資料作成
+スケジュール調整","月末支払い登録と日繰り更新
+ICDA資料作成
+社名変更タスク整理(できることからやっていく)",役割について相談したい
+19:24:59,2026/01/23,@Takanori Senju,Sales&PoC,"Falの提案資料作成
+週報サマリー作成自動化ツールの作成
+Furiosa PoCの結果まとめ","社内PoCの仮説構築
+fal提案資料の最終修正
+週報サマリー作成自動化ツールのアップデート",特になし
+14:44:14,2026/01/25,@Hiroyuki Toeda,Other,"1.PoC提案フレームワークの整理:：
+見込み顧客向けの標準化されたPoC提案テンプレートを設計。会社紹介、評価基準、実施計画まで一貫性のある提案構成を構築。
+2.UFCloud顧客説明向けマニュアル：
+現状の機能一覧、操作を中心としたマニュアル構成の設計。Playground、Fine-tuning、API Keys等の画面別に整理した構成を確定。機能一覧などの概要まで着手。
+3.Tenstorrent専用問い合わせ導線の全体設計と入り口（Slack/mail）の実装：
+エンプラ対応も見据えた汎用版業務フロー設計。テクニカルサポート向けSlack専用チャンネルと標準サポート向けメールアドレスの2系統を整備。","1.PoC提案フレームワークの残項目作成：
+今週設計した提案テンプレートの未完成項目を作成。
+2.UFCloud顧客説明向けマニュアルの残項目作成：
+設計済みの構成に基づき、各機能の詳細説明と操作手順を作成。
+3.エンプラ導線におけるHubSpot/JIRA連携の運用フロー更新（+SHIFT）：
+SHIFTと連携しHubSpotからJIRAへのエスカレーションルールと運用プロセスを整備。",
+10:49:04,2026/01/26,@Mike,Development,"Finalized the API development of serverless inference lora for fine-tuned model.
+Made a comprehensive documentation.
+Finalized the Unit test for serverless inference lora.","Review and Update documentation and figure out project maintenance methodologies.
+Make plan for Playground usage of fine-tuned models and make a dedicated deployment for fine-tuned model. 
+Discuss and plan for the long term architecture",
+17:53:00,2026/01/30,@Ryoki Chiba,Other,"・会議通訳
+・リクルーターにお問い合わせ、ミーティング
+・候補者の整理","・新規リクルーターとミーティング
+・書類選考通過者の面接
+・会議通訳",特化型じゃないリクルーターについてどの分野で手伝ってもらえるか不明な部分がある。会社の良さを伝えるのもうまく言語化できていない部分があるため、資料等に落とし込んだ方がいいと思った。
+20:56:51,2026/01/30,@Akimitsu Nagashima,Development,"・アプリインフラ調査とまとめ（llm、API）
+・メトリクス収集、監視関係のメンテナンス
+・ダッシュボード作成を少々","・API周りのインフラについて、細部の確認が甘いものを詰めて柳井さんに動作検証を依頼、できれば自分でもやる
+・Rayを理解して検証環境に載せる
+・監視ダッシュボード作成",今現在はありません
+23:32:54,2026/01/30,@Samantha,Operation,"1. Attended the content preparation and translation work for “Project Plan 2026-01-30 version” and Weekly Report and TTxUF Minutes. 
+2. Review the “Request for Information” document on AI data center in SL.
+3. Brain storming session with Dave san and focused on few key areas to be attended.","1. Observing available cutting-edge AI applications and its computational tasks
+2. Upcoming work on translations and preparing notes in English on meetings content
+3. Meeting H.E. Ambassador in Japan for SL.",Not specifically.
+23:35:34,2026/01/30,@Mike,Development,"Making documentation Structure and Methodology
+SDK for batch request and inference models
+Documentation 70 files review of TaaS stack in github
+Planned February roadmap with Yuhei-san",Finalize the documentation review and distribute tasks for February plan,What are the engineering development plans on the ownership of the development and modules for April launch
+7:46:50,2026/02/02,@Hiroyuki Toeda,Other,"①UFCloud Productマニュアルの作成（Part 1-2）: Part1:サービス概要、Part2:QuickStart、Part3：API推論実装、Rag、まで作成。
+②Tenstorrent専用問い合わせ導線の運用設計完成: HubSpot→JIRA連携を含む9ステップの運用フローを設計。L1（CS/Keido）→L2（技術チーム）のエスカレーション構造、Slack通知、チケット管理の全体像を可視化したフローチャートを作成し、HubSpot中心に機能実装まで完了。
+③PoC評価観点の整理→PoCチェックリスト:社内PoC評価観点の整理→PoCチェックリストへの反映。（ここは後者が検討時間含め手がまわらず次週へ、、）","①UFCloud Productマニュアルの作成（Part３以降）機能面で特にRAG＞Batch＞Finetuening　機能開発整合との見合いで作成レベル調整が必要
+②PoC関連対応、社外内双方への対応。（+潮田和則さん、千住さん）
+③HubSpot関連の追加回収昨日の棚卸し（+keidoさん、SHIFT梶田さん）",入力遅れまして申し訳ありません。
+8:09:16,2026/02/02,@Kaid Vishwa,Operation,I set it up so emails automatically create new tickets in Hubspot. I made a demo for the RAG process. And I completed a good portion of the manual.,"More stuff related to support tickets, adjustments the Batch API section of the manual and maybe Analytics.",
+8:51:09,2026/02/02,@Misaki Hagio,Operation,"月末支払い申請
+日繰り・株報作成
+健康診断の調整・案内","勤怠・経費締め
+日繰り過去分の追記
+業務委託発注",特にないです！
+9:06:54,2026/02/02,@Rajendra Kishan,Development,"1. Created Development plan for Lora Playground
+2. Implemented 2 new LLM's for testing with TAAS application.
+3. Confirmation of MCW development tasks during previous phases.","1. Finalizing the development of Lora Playground
+2. Planning for Dedicated Endpoints feature development.
+3. Finalizing Rate Limiting in TAAS application.",None.
+16:55:08,2026/02/03,@David Bennett,CEO,"- build japan preparation
+- overall strategy planning
+- incorporation and branding decisions",So much to do,"- need more resources
+- data center readiness"
+17:44:29,2026/02/06,@Ryoki Chiba,Other,"面接の調整
+面接の実施
+新規リクルーターとアポ","面接の調整
+候補者の整理
+採用チャンネルの整理",リクルーターと掲載サイトから候補者が一気に増えて、数がさばけなくなってきている。書類選考で効率よく合否を出す基準を設けないといけない気がする。
+17:59:51,2026/02/06,@Ryuei Morimoto,CDO,"1. Procurement & Operations
+Vendor Coordination: Liaise with Ryoyo and Dell to finalize procurement details.
+
+Status Management: Update the Master Tracking Sheet to reflect the latest procurement status and inventory data.
+
+2. Sales & Business Development
+Strategic Appointment: Schedule/Attend a meeting with the CEO of PaleBlue.ai (acting as Morgen).
+
+Lead Generation: Perform ""Opportunity Digging"" for GMI Cloud to identify and qualify new business leads.
+
+3. Partner Management
+Morgenrot Follow-up: Execute follow-up actions with Morgenrot to ensure project continuity and relationship management.","1. On-site Infrastructure (Everest)
+Cable Termination & Connectivity: Hand-build network cables on-site at Everest and connect them to the InRow cooling/rack units.
+
+2. Procurement Management
+Procurement Follow-up: Follow up on pending orders and supply chain coordination to ensure timely delivery.
+
+3. Sales Development
+Sales Follow-up: Reach out to active leads and prospects to move current opportunities through the pipeline.",none at this moment
+18:32:59,2026/02/06,@Samantha,Operation,"1. Attended the translation work and content preparation for Weekly Report. 
+2. Prepared TTxUF meeting minutes in English. 
+3. Fine tuned the RFI document on data center in SL.
+4. Met H.E. Ambassador in Japan for SL","1. Study on available cutting-edge AI applications 
+2.Upcoming work on translations and preparing notes in English on meetings content etc",Not specially
+18:36:33,2026/02/06,@Kaid Vishwa,Operation,"Got the RAG Demo done, and porting it to the Knowledge Base.
+More work on the PPT manual.
+Started work on the docs again.","Work on the Docs.
+Continue porting RAG Demo to Hubspot.
+Start gathering prices again.",
+18:36:34,2026/02/06,@Rajendra Kishan,Development,"1. Planned Deploy on dedicated function (deploying finetuned models in reserved GPU)
+2. Finalized Lora playground and on development.
+3. Bug fixes on Taas backend.","1. Finalizing dedicated on playground
+2. Taas performance evaluation",None
+18:48:12,2026/02/06,@Takanori Senju,Sales&PoC,"・UF Cloudのモデル性能評価指標を作る
+・モデルの性能を評価するためのコード実装
+・週報サマリーアプリの機能拡張","・週報サマリーアプリの機能拡張する
+・UF Cloudのモデル性能を測定する
+・新たな社内PoCを計画する",
+19:05:35,2026/02/06,@Misaki Hagio,Operation,"・スケジュール調整
+・日繰り表過去分更新（9月までさかのぼり）
+・ICDA業務","・社名変更タスクのTODO作成
+・既存情報の整理と継続対応
+・日繰り表遡り（4月まで）","困っていることではないのですが、
+月末まで多少余裕があるので、できることがあればおっしゃってください。"
+8:52:57,2026/02/07,@Akimitsu Nagashima,Development,"・サーバー移設周りの段取り、調整、MTGなど
+・llm serve周りの技術調査、実装準備
+・アプリ周りの技術調査、開発補助","・llm serve実装＆検証
+・サーバー移設、maas環境の準備
+・監視項目すり合わせ、ダッシュボード作成（できれば）",
+23:54:39,2026/02/08,@Mike,Development,"February Technical planning for software development
+Documentation Review
+GitHub Configurations
+New Infra research","Migration from AWS EKS to new infra on EC2
+Serverless Lora Playground
+UI Playground Chat Upgrade
+Refactoring&Performance Improvement",
+12:02:03,2026/02/09,@Hiroyuki Toeda,Other,"1 UFCloud Productマニュアル Part 3-4の作成継続: RAG機能セクション(アーキテクチャマップとして準備フェーズ、検索フェーズのマッピング、実装ガイド)でスライド構成を作成。加えてSettings(Part 4)セクションを既存マニュアルの粒度に合わせ簡潔に作成。いったん現状構成は完了。
+2 PoC評価フレームワークのアップデート(+千住さん)、詳細は次週和則さん含め認識合わせ実施。
+3 SLA/SLO設計のロードマップ更新(28項目のSLA候補について進捗棚卸し)。
+4 HubSpot契約体系の整備と今後の対応方針の策定。（HubSpot社確認のうえ方針は決定済）","1 UFCloud Productマニュアルのレビュー&更新。
+
+2 PoCの進捗確認、不備・不足事項への対応。（社内、社外双方）
+
+3 HubSpot操作マニュアルの作成、更新（＋keidoさん）
+
+4.UFCloud内のDoc領域（overview /QuickStart）の更新",

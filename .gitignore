@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# 秘密情報
+credential/*.json
+credential/.env
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# ログ・出力ファイル
+*.log
+pdf/
+model_comparison_report.md
