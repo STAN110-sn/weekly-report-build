@@ -3,7 +3,7 @@ AI分析サービス
 Unsung Fields APIを使用して日報を分析・要約
 """
 from openai import OpenAI
-from typing import List, Dict
+from typing import List, Dict, Optional
 import time
 
 from config import config
@@ -234,7 +234,7 @@ class AIAnalyzer:
                     max_tokens=4096,
                     top_p=1,
                     stream=False,
-                    # reasoning_effort="high",
+                    reasoning_effort="medium",
                 )
                 self._log(f"API呼び出し成功: {context}")
                 
@@ -517,7 +517,8 @@ class AIAnalyzer:
         start_date: str,
         end_date: str,
         submission_status: Dict,
-        general_report: Dict = None
+        general_report: Dict = None,
+        consultations_for_exec: Optional[List[Dict]] = None,
     ) -> Dict:
         """
         エグゼクティブ向けWeekly Reportを生成（個人名を含む）
@@ -528,6 +529,9 @@ class AIAnalyzer:
             end_date: 終了日（YYYY-MM-DD）
             submission_status: 提出状況データ（submission_tracker.check_submission_status()の戻り値）
             general_report: 一般向けレポートの分析結果（再利用用）
+            consultations_for_exec: DBから取得した相談（閲覧権限フィルタ済み）。
+                各要素は {"name": str, "feedback": str} または {"content": str, "author_name": str} 形式。
+                指定時は Exec 向け private_feedback にマージされる。
         
         Returns:
             エグゼクティブ向けレポートコンテンツ
@@ -554,13 +558,23 @@ class AIAnalyzer:
             self._log(f"[Token Summary] API呼び出し回数: {usage_summary['summary']['total_api_calls']}")
             self._log(f"[Token Summary] 総トークン数: {usage_summary['summary']['total_tokens']}")
             
+            # 相談データを private_feedback にマージ（閲覧権限フィルタ済みのものを渡す）
+            private_feedback = list(exec_analysis.get("private_feedback", []))
+            if consultations_for_exec:
+                for c in consultations_for_exec:
+                    if isinstance(c, dict):
+                        name = c.get("name") or c.get("author_name") or "匿名"
+                        feedback = c.get("feedback") or c.get("content", "")
+                        if feedback:
+                            private_feedback.append({"name": name, "feedback": feedback})
+
             result = {
                 "period": {
                     "start": start_date,
                     "end": end_date
                 },
                 "executive_summary": exec_analysis.get("executive_summary", ""),
-                "private_feedback": exec_analysis.get("private_feedback", []),
+                "private_feedback": private_feedback,
                 "action_items": exec_analysis.get("action_items", []),
                 "submission_status": submission_status,
                 "total_reports": len(reports),
@@ -584,6 +598,70 @@ class AIAnalyzer:
             self._log(f"エグゼクティブ向けレポート生成エラー: {type(e).__name__} - {str(e)}")
             raise
     
+    def generate_markdown_report(self, report_content: Dict, report_type: str = "general") -> str:
+        """
+        analyze_and_generate_report() / analyze_and_generate_exec_report() の戻り値を
+        Markdown 文字列に変換する（API 呼び出しなし）。
+        """
+        period = report_content.get("period", {})
+        start = period.get("start", "")
+        end = period.get("end", "")
+
+        lines = [f"# Weekly Report: {start} ～ {end}", ""]
+
+        summary = report_content.get("summary") or report_content.get("executive_summary", "")
+        if summary:
+            section = "エグゼクティブサマリー" if report_type == "executive" else "全体サマリー"
+            lines += [f"## {section}", "", summary, ""]
+
+        issues = report_content.get("issues_and_risks", [])
+        if issues:
+            lines += ["## 課題・リスク", ""]
+            for item in issues:
+                if isinstance(item, dict):
+                    lines.append(
+                        f"- {item.get('issue', '')} [{item.get('severity', '')}] ({item.get('department', '')})"
+                    )
+                else:
+                    lines.append(f"- {item}")
+            lines.append("")
+
+        focus = report_content.get("next_week_focus", [])
+        if focus:
+            lines += ["## 来週の注目点", ""]
+            for item in focus:
+                lines.append(f"- {item}")
+            lines.append("")
+
+        dept_highlights = report_content.get("department_highlights", {})
+        if dept_highlights:
+            lines += ["## 部署別ハイライト", ""]
+            for dept, highlights in dept_highlights.items():
+                if highlights and highlights != "該当期間の報告なし":
+                    lines += [f"### {dept}", "", str(highlights), ""]
+
+        if report_type == "executive":
+            feedback = report_content.get("private_feedback", [])
+            if feedback:
+                lines += ["## 個人フィードバック", ""]
+                for item in feedback:
+                    if isinstance(item, dict):
+                        name = item.get("name", "匿名")
+                        fb = item.get("feedback", "")
+                        lines.append(f"- **{name}**: {fb}")
+                    else:
+                        lines.append(f"- {item}")
+                lines.append("")
+
+            actions = report_content.get("action_items", [])
+            if actions:
+                lines += ["## アクションアイテム", ""]
+                for item in actions:
+                    lines.append(f"- {item}")
+                lines.append("")
+
+        return "\n".join(lines)
+
     def _analyze_for_exec(self, formatted_data: str, start_date: str, end_date: str) -> Dict:
         """エグゼクティブ向け分析（個人名を含む）"""
         self._log(f"エグゼクティブ向け分析開始: {start_date} ~ {end_date}")

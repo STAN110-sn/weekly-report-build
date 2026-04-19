@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}メンバー管理{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0 fw-bold">メンバー管理</h5>
+  {% if is_admin %}
+  <button class="btn btn-sm btn-primary" onclick="openCreateModal()">+ 追加</button>
+  {% endif %}
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover table-sm" id="membersTable">
+    <thead class="table-dark">
+      <tr>
+        <th>名前</th><th>メール</th><th>部署</th><th>ロール</th><th>状態</th>
+        {% if is_admin %}<th></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody id="membersBody">
+      <tr><td colspan="6" class="text-center text-muted py-4">読み込み中...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+{% if is_admin %}
+<!-- Edit / Create Modal -->
+<div class="modal fade" id="memberModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="modalTitle">メンバー編集</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editMemberId">
+        <div class="mb-2">
+          <label class="form-label small">名前 <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm" id="editName">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">メール</label>
+          <input type="email" class="form-control form-control-sm" id="editEmail">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">部署</label>
+          <select class="form-select form-select-sm" id="editDepartment">
+            <option value="Development">Development</option>
+            <option value="Sales&PoC">Sales&PoC</option>
+            <option value="Operation">Operation</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">ロール</label>
+          <select class="form-select form-select-sm" id="editRole">
+            <option value="employee">Employee</option>
+            <option value="executive">Executive</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">Slack ID</label>
+          <input type="text" class="form-control form-control-sm" id="editSlackId" placeholder="@username">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="editActive">
+          <label class="form-check-label small" for="editActive">有効</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div id="modalError" class="text-danger small me-auto"></div>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="saveMember()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+const IS_ADMIN = {{ 'true' if is_admin else 'false' }};
+</script>
+<script src="/static/members.js"></script>
+{% endblock %}

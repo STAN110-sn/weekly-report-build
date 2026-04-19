@@ -1,0 +1,27 @@
+body {
+  font-size: 0.9rem;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+#reportPreview h1 { font-size: 1.4rem; }
+#reportPreview h2 { font-size: 1.2rem; margin-top: 1.2rem; }
+#reportPreview h3 { font-size: 1rem; margin-top: 1rem; }
+#reportPreview ul { padding-left: 1.2rem; }
+
+.report-item {
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: border-color 0.15s;
+}
+.report-item:hover { background: #f8f9fa; }
+.report-item.active { border-left-color: #0d6efd; background: #e8f0fe; }
+.report-badge-executive { background-color: #6f42c1; }
+
+@media print {
+  nav, .col-md-4, #reportLinks { display: none !important; }
+  .col-md-8 { width: 100% !important; }
+  #reportPreview { border: none !important; max-height: none !important; overflow: visible !important; }
+}

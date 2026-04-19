@@ -162,7 +162,32 @@ def generate_weekly_report(request, start_date_override=None, end_date_override=
                 )
                 print(f"Google Docs作成: {doc_url}")
                 print(f"PDF作成: {pdf_url}")
-                
+
+                # GeneratedReport を DB に保存
+                if config.DATABASE_URL:
+                    try:
+                        from web.database import get_db_context
+                        from web.models import GeneratedReport
+                        from datetime import datetime as _dt
+                        analyzer_for_md = analyzer
+                        _md = analyzer_for_md.generate_markdown_report(report_content, "general")
+                        with get_db_context() as db:
+                            gr = GeneratedReport(
+                                report_type="general",
+                                period_start=week_start.date(),
+                                period_end=week_end.date(),
+                                markdown_content=_md,
+                                google_doc_url=doc_url,
+                                google_pdf_url=pdf_url,
+                                total_reports=len(daily_reports),
+                                model_used=analyzer.model,
+                                generated_at=_dt.utcnow(),
+                            )
+                            db.add(gr)
+                            db.commit()
+                    except Exception as _e:
+                        print(f"GeneratedReport保存エラー（続行）: {_e}")
+
                 # トークン使用量をJSONファイルとして保存（LOGS_FOLDER_ID使用）
                 if token_usage and config.LOGS_FOLDER_ID:
                     try:
@@ -217,7 +242,38 @@ def generate_weekly_report(request, start_date_override=None, end_date_override=
         if exec_env_ready:
             try:
                 print("エグゼクティブ向けレポート生成を開始")
-                
+
+                # 相談データをDBから取得（DATABASE_URL設定時、blind_to_exec_id なしのもののみ）
+                consultations_for_exec = None
+                if config.DATABASE_URL:
+                    try:
+                        import sys
+                        from pathlib import Path
+                        app_dir = Path(__file__).resolve().parent
+                        if str(app_dir) not in sys.path:
+                            sys.path.insert(0, str(app_dir))
+                        from web.database import get_db_context
+                        from web.models import Consultation
+                        with get_db_context() as db:
+                            consultations = (
+                                db.query(Consultation)
+                                .filter(Consultation.blind_to_exec_id.is_(None))
+                                .order_by(Consultation.submitted_at.desc())
+                                .limit(200)
+                                .all()
+                            )
+                            consultations_for_exec = [
+                                {
+                                    "content": c.content,
+                                    "author_name": None if c.is_anonymous else (c.member.name if c.member else None),
+                                }
+                                for c in consultations
+                            ]
+                        if consultations_for_exec:
+                            print(f"相談データ {len(consultations_for_exec)} 件を Exec レポートに含めます")
+                    except Exception as e:
+                        print(f"相談データ取得エラー（続行）: {str(e)}")
+
                 # Exec向けAI分析（一般向け分析結果を再利用）
                 exec_analyzer = AIAnalyzer(model_override=model_override)
                 exec_content = exec_analyzer.analyze_and_generate_exec_report(
@@ -225,7 +281,8 @@ def generate_weekly_report(request, start_date_override=None, end_date_override=
                     week_start.strftime('%Y-%m-%d'),
                     week_end.strftime('%Y-%m-%d'),
                     submission_status,
-                    general_report=report_content
+                    general_report=report_content,
+                    consultations_for_exec=consultations_for_exec,
                 )
                 
                 # Exec向けトークン使用量と処理時間を取得（レポートからは削除せず、後で別管理）
@@ -245,7 +302,31 @@ def generate_weekly_report(request, start_date_override=None, end_date_override=
                 )
                 print(f"エグゼクティブ向けGoogle Docs作成: {exec_doc_url}")
                 print(f"エグゼクティブ向けPDF作成: {exec_pdf_url}")
-                
+
+                # Exec GeneratedReport を DB に保存
+                if config.DATABASE_URL:
+                    try:
+                        from web.database import get_db_context
+                        from web.models import GeneratedReport
+                        from datetime import datetime as _dt
+                        _exec_md = exec_analyzer.generate_markdown_report(exec_content, "executive")
+                        with get_db_context() as db:
+                            gr_exec = GeneratedReport(
+                                report_type="executive",
+                                period_start=week_start.date(),
+                                period_end=week_end.date(),
+                                markdown_content=_exec_md,
+                                google_doc_url=exec_doc_url,
+                                google_pdf_url=exec_pdf_url,
+                                total_reports=len(daily_reports),
+                                model_used=exec_analyzer.model,
+                                generated_at=_dt.utcnow(),
+                            )
+                            db.add(gr_exec)
+                            db.commit()
+                    except Exception as _e:
+                        print(f"Exec GeneratedReport保存エラー（続行）: {_e}")
+
                 # Exec向けトークンログ保存（LOGS_FOLDER_ID使用）
                 if exec_token_usage and config.LOGS_FOLDER_ID:
                     try:

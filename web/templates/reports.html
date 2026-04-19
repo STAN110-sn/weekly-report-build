@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}レポート{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <h6 class="fw-bold mb-2">レポート一覧</h6>
+    <div id="reportList" style="max-height:80vh;overflow-y:auto">
+      <p class="text-muted small">読み込み中...</p>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="fw-bold mb-0" id="reportTitle">レポートを選択してください</h6>
+      <div id="reportLinks"></div>
+    </div>
+    <div id="reportPreview" class="border rounded p-3 bg-white" style="min-height:400px;max-height:80vh;overflow-y:auto">
+      <p class="text-muted">左のリストからレポートを選択すると内容が表示されます。</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const IS_ADMIN = {{ 'true' if is_admin else 'false' }};
+</script>
+<script src="/static/reports.js"></script>
+{% endblock %}
