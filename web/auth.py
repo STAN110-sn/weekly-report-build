@@ -50,10 +50,26 @@ def _member_from_payload(payload: dict, db: Session) -> Optional[Member]:
     return db.query(Member).filter(Member.id == int(member_id), Member.active == True).first()
 
 
+def _dev_member() -> Member:
+    """DEV_BYPASS_AUTH=true 時に使う仮の admin ユーザー（DB 不使用）"""
+    m = Member()
+    m.id = 0
+    m.name = "Dev Admin"
+    m.email = "dev@localhost"
+    m.role = "admin"
+    m.active = True
+    m.department = "Development"
+    m.slack_id = None
+    return m
+
+
 async def get_current_user(
     request: Request,
     db: Session = Depends(get_db),
 ) -> Optional[Member]:
+    from config import config as _cfg
+    if _cfg.DEV_BYPASS_AUTH:
+        return _dev_member()
     token = _extract_token(request)
     if not token:
         return None

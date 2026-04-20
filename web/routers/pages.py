@@ -17,6 +17,10 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent
 
 
 def _get_user_for_page(request: Request, db: Session) -> Member | None:
+    from config import config as _cfg
+    if _cfg.DEV_BYPASS_AUTH:
+        from ..auth import _dev_member
+        return _dev_member()
     token = _extract_token(request)
     if not token:
         return None

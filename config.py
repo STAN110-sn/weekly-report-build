@@ -109,6 +109,7 @@ class Config:
 
     # テスト/開発モード設定
     DRY_RUN: bool = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
+    DEV_BYPASS_AUTH: bool = os.getenv("DEV_BYPASS_AUTH", "false").lower() in ("true", "1", "yes")
 
     # GCP認証（サービスアカウントキーのパス or 環境変数）
     GOOGLE_APPLICATION_CREDENTIALS: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
