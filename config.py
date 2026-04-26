@@ -119,7 +119,11 @@ class Config:
     # Web アプリ用（OAuth2, DB）
     GOOGLE_OAUTH_CLIENT_ID: str = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
     GOOGLE_OAUTH_CLIENT_SECRET: str = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./weekly_report.db")
+    DATABASE_URL: str = (
+        os.getenv("DATABASE_URL")
+        or os.getenv("SCHEMA_TO_GO_URL")
+        or "sqlite:///./weekly_report.db"
+    )
     SECRET_KEY: str = os.getenv("SECRET_KEY", "change-me-in-production")
     APP_BASE_URL: str = os.getenv("APP_BASE_URL", "http://localhost:8000")
 

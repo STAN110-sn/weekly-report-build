@@ -9,7 +9,11 @@ from typing import Generator
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker, declarative_base
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./weekly_report.db")
+DATABASE_URL = (
+    os.getenv("DATABASE_URL")
+    or os.getenv("SCHEMA_TO_GO_URL")
+    or "sqlite:///./weekly_report.db"
+)
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
