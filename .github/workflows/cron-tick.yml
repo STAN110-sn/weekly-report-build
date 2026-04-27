@@ -1,0 +1,36 @@
+name: Weekly Report Cron Tick
+
+# 15分おきに本番アプリの /internal/cron/tick を叩き、
+# DB に登録されたスケジュールのうち発火時刻に達したものを実行させる。
+#
+# 必要な GitHub Secrets:
+#   - APP_BASE_URL : 例 https://your-app.build.io
+#   - CRON_TOKEN   : build.io 側 Config Vars と同じ値（共有シークレット）
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-tick
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: POST /internal/cron/tick
+        env:
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+          CRON_TOKEN: ${{ secrets.CRON_TOKEN }}
+        run: |
+          if [ -z "$APP_BASE_URL" ] || [ -z "$CRON_TOKEN" ]; then
+            echo "::error::APP_BASE_URL or CRON_TOKEN secret is not set"
+            exit 1
+          fi
+          curl -fsS -X POST "$APP_BASE_URL/internal/cron/tick" \
+            -H "Authorization: Bearer $CRON_TOKEN" \
+            --max-time 600 \
+            -w "\nHTTP %{http_code}\n"

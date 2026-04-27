@@ -11,6 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from .database import init_db, run_migrations
 from .routers import member, consultation
 from .routers import auth_router, pages, report, weekly_report
+from .routers import cron as cron_router
+from .routers import schedule_router
 
 
 @asynccontextmanager
@@ -45,6 +47,8 @@ app.include_router(member.router, prefix="/api")
 app.include_router(consultation.router, prefix="/api")
 app.include_router(report.router, prefix="/api")
 app.include_router(weekly_report.router, prefix="/api")
+app.include_router(schedule_router.router, prefix="/api")
+app.include_router(cron_router.router)
 
 
 @app.get("/health")

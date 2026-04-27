@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}スケジュール管理{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0 fw-bold">スケジュール管理</h5>
+  <button class="btn btn-sm btn-primary" onclick="openCreateScheduleModal()">+ 追加</button>
+</div>
+
+<p class="text-muted small mb-3">
+  外部 cron が15分おきに発火時刻をチェックします。曜日と時刻を設定し、有効化してください。
+  「Run Now」ボタンで即時実行できます。
+</p>
+
+<div class="table-responsive">
+  <table class="table table-hover table-sm" id="schedulesTable">
+    <thead class="table-dark">
+      <tr>
+        <th>名前</th>
+        <th>対象</th>
+        <th>曜日</th>
+        <th>時刻</th>
+        <th>有効</th>
+        <th>次回実行</th>
+        <th>前回実行</th>
+        <th>結果</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="schedulesBody">
+      <tr><td colspan="9" class="text-center text-muted py-4">読み込み中...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Edit / Create Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="scheduleModalTitle">スケジュール編集</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editScheduleId">
+        <div class="mb-2">
+          <label class="form-label small">名前 <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm" id="schName" placeholder="例: 全体週次レポート">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">レポートタイプ</label>
+          <select class="form-select form-select-sm" id="schReportType">
+            <option value="both">両方（全体 + Exec）</option>
+            <option value="general">全体のみ</option>
+            <option value="executive">Exec のみ</option>
+          </select>
+          <div class="form-text small text-muted">
+            ※ 現在は内部実装の都合で常に main.py の挙動（両方生成）になります。EXEC_FOLDER_ID 未設定時のみ Exec はスキップされます。
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">対象曜日 <span class="text-danger">*</span></label>
+          <div class="d-flex gap-2 flex-wrap">
+            {% for label, value in [('月',0), ('火',1), ('水',2), ('木',3), ('金',4), ('土',5), ('日',6)] %}
+            <div class="form-check">
+              <input class="form-check-input sch-dow" type="checkbox" value="{{ value }}" id="schDow{{ value }}">
+              <label class="form-check-label small" for="schDow{{ value }}">{{ label }}</label>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col">
+            <label class="form-label small">時 (0-23) <span class="text-danger">*</span></label>
+            <input type="number" min="0" max="23" class="form-control form-control-sm" id="schHour" value="9">
+          </div>
+          <div class="col">
+            <label class="form-label small">分 (0-59) <span class="text-danger">*</span></label>
+            <input type="number" min="0" max="59" class="form-control form-control-sm" id="schMinute" value="0">
+          </div>
+          <div class="col">
+            <label class="form-label small">タイムゾーン</label>
+            <input type="text" class="form-control form-control-sm" id="schTimezone" value="Asia/Tokyo">
+          </div>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="schEnabled" checked>
+          <label class="form-check-label small" for="schEnabled">有効化</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div id="scheduleModalError" class="text-danger small me-auto"></div>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="saveSchedule()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/schedules.js"></script>
+{% endblock %}

@@ -74,3 +74,16 @@ def weekly_report_page(request: Request, db: Session = Depends(get_db)):
         "weekly_report.html",
         {"request": request, "user": user},
     )
+
+
+@router.get("/admin/schedules", response_class=HTMLResponse)
+def schedules_page(request: Request, db: Session = Depends(get_db)):
+    user = _get_user_for_page(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=302)
+    if user.role != "admin":
+        return RedirectResponse("/members", status_code=302)
+    return templates.TemplateResponse(
+        "schedules.html",
+        {"request": request, "user": user, "is_admin": True},
+    )

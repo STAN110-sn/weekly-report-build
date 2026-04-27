@@ -20,6 +20,9 @@
           <li class="nav-item"><a class="nav-link" href="/members">メンバー</a></li>
           <li class="nav-item"><a class="nav-link" href="/reports">レポート</a></li>
           <li class="nav-item"><a class="nav-link" href="/weekly-report">週報提出</a></li>
+          {% if user and user.role == 'admin' %}
+          <li class="nav-item"><a class="nav-link" href="/admin/schedules">スケジュール</a></li>
+          {% endif %}
         </ul>
         <ul class="navbar-nav ms-auto">
           {% if user %}

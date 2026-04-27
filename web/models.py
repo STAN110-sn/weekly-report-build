@@ -110,3 +110,26 @@ class Consultation(Base):
         back_populates="consultations_target",
         foreign_keys=[target_exec_id],
     )
+
+
+class ReportSchedule(Base):
+    """レポート定期実行スケジュール"""
+
+    __tablename__ = "report_schedules"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(200), nullable=False)
+    report_type = Column(String(20), default="both")  # general | executive | both
+    days_of_week = Column(String(20), nullable=False)  # CSV "0,3" Mon=0..Sun=6
+    hour = Column(Integer, nullable=False)
+    minute = Column(Integer, nullable=False)
+    timezone = Column(String(50), default="Asia/Tokyo")
+    enabled = Column(Boolean, default=True)
+    next_run_at = Column(DateTime, nullable=True, index=True)  # UTC
+    last_run_at = Column(DateTime, nullable=True)  # UTC
+    last_run_status = Column(String(500), nullable=True)
+    created_by_id = Column(Integer, ForeignKey("members.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    created_by = relationship("Member", foreign_keys=[created_by_id])

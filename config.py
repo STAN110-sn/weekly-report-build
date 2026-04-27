@@ -111,6 +111,10 @@ class Config:
     DRY_RUN: bool = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
     DEV_BYPASS_AUTH: bool = os.getenv("DEV_BYPASS_AUTH", "false").lower() in ("true", "1", "yes")
 
+    # 定期実行（外部 cron + DB 駆動スケジューラ）
+    CRON_TOKEN: str = os.getenv("CRON_TOKEN", "")
+    SCHEDULE_TIMEZONE: str = os.getenv("SCHEDULE_TIMEZONE", "Asia/Tokyo")
+
     # GCP認証（サービスアカウントキーのパス or 環境変数）
     GOOGLE_APPLICATION_CREDENTIALS: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
     # Build/Heroku等ファイルを置けない環境向け: サービスアカウントJSONをそのまま or base64エンコードして渡す

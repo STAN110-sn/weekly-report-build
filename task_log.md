@@ -122,3 +122,87 @@ DATABASE_URL = (
 
 - `config.py:122-126` — DB URL fallback 追加
 - `web/database.py:12-16` — 同上
+
+---
+
+## 2026-04-27: 週次レポート定期実行機能の実装（外部cron + DB駆動スケジューラ）
+
+### 背景
+
+build.io（Heroku系PaaS）に cron アドオンを使わずに定期実行を実現する必要があった。さらに「実行スケジュール（曜日・時刻・週何回）を Web UI から admin が変更できる」要件も同時に解決したい。
+
+### 採用したアーキテクチャ
+
+「**GitHub Actions cron で15分おきに app の tick エンドポイントを叩き、DB に保存されたスケジュールに従ってアプリ側が判定・実行**」というハイブリッド方式。スケジュール定義は DB なので UI から自由に編集でき、デプロイ不要。
+
+```
+GitHub Actions (*/15 * * * *)
+  → POST /internal/cron/tick (Bearer CRON_TOKEN)
+  → SELECT due schedules WHERE next_run_at <= now() FOR UPDATE SKIP LOCKED
+  → 各スケジュールごとに main.generate_weekly_report() を同期呼び出し
+  → next_run_at を次回時刻に更新、last_run_at / last_run_status を記録
+```
+
+### 設計の要点
+
+- `next_run_at` を**事前計算**して DB に保持（時刻ウィンドウ判定はしない）→ GitHub Actions cron の遅延に強い
+- claim は `FOR UPDATE SKIP LOCKED`（Postgres）で行い、複数 dyno でも重複実行しない。SQLite では単純 SELECT で代替（dev用）
+- 1 schedule = 複数曜日 + 単一時刻（例: 月木 9:00）。UI のチェックボックスで曜日複数選択 → 「週何回」が暗黙的に表現される
+- admin が「Run Now」ボタンで手動実行できる（テスト・救済用）
+- 失敗時も必ず `next_run_at` を未来に進めることで永遠ループを防ぐ
+
+### 新規ファイル
+
+- `web/services/__init__.py` — services パッケージ初期化
+- `web/services/scheduler_service.py` — `compute_next_run_at`, `claim_due_schedules`, `run_due_schedules`, `refresh_next_run_at`
+- `web/services/report_runner.py` — main.generate_weekly_report の薄いアダプタ
+- `web/routers/cron.py` — `POST /internal/cron/tick`（CRON_TOKEN 認証）
+- `web/routers/schedule_router.py` — `/api/admin/schedules` の CRUD + run-now（require_admin）
+- `web/templates/schedules.html` — admin UI（曜日チェックボックス + HH:MM picker + Run Now）
+- `web/static/schedules.js` — fetch ベース CRUD
+- `.github/workflows/cron-tick.yml` — 15分おきに本番 tick を叩く GitHub Actions
+
+### 修正ファイル
+
+- `web/models.py` — `ReportSchedule` モデル追加
+- `web/app.py` — cron / schedule_router を include
+- `web/routers/pages.py` — `/admin/schedules` ページ（admin 限定、非admin は /members へリダイレクト）
+- `web/templates/base.html` — admin ナビに「スケジュール」リンク追加
+- `config.py` — `CRON_TOKEN`, `SCHEDULE_TIMEZONE` 追加
+
+### ローカル検証結果（SQLite）
+
+`fastapi.testclient.TestClient` で end-to-end テスト実施 → すべてパス:
+
+- 認証なし / 不正トークンの tick → 401 ✓
+- 正規トークンの tick（空スケジュール）→ 200, fired:0 ✓
+- `days_of_week=[]` での create → 400 ✓
+- 月木 9:00 JST スケジュール作成 → `next_run_at = 2026-04-30T00:00:00`（4/30 木 9:00 JST = UTC 0:00）✓
+- `hour=10` 更新 → `next_run_at = 2026-04-30T01:00:00` に追従 ✓
+- `enabled=false` → `next_run_at=null` / 再有効化で復活 ✓
+- delete → 204 ✓
+- `report_schedules` テーブルが `init_db()` で自動作成 ✓
+
+### 必要な環境変数（本番）
+
+build.io 側:
+- `CRON_TOKEN` — `openssl rand -hex 32` で生成した値（必須、未設定時は tick が 503 を返す）
+- `SCHEDULE_TIMEZONE` — 任意（デフォルト `Asia/Tokyo`）
+
+GitHub Secrets:
+- `APP_BASE_URL` — 例 `https://your-app.build.io`
+- `CRON_TOKEN` — build.io と同じ値
+
+### 既知の制約・スコープ外
+
+- **report_type 別の部分実行は未対応**: UI で general/executive/both を選べるが、内部では現状 `main.generate_weekly_report()` を呼び出すのみで、report_type は無視される（main.py が両方を1関数で実行する構造のため）。後で main.py を分割する別タスクで対応
+- **同期実行**: tick リクエスト中にレポート生成（30〜90秒）が完了するまでブロックする。GitHub Actions の curl は `--max-time 600` 設定済み。許容できなくなったら BackgroundTasks か worker dyno へ
+- **catch-up 動作**: dyno が長時間ダウンしていた場合、復旧後の最初の tick で過去分が一気に発火する（1回分のみ。`next_run_at` は次回時刻に上書きされる）
+
+### 関連ファイル
+
+- `web/models.py:115-135` — `ReportSchedule`
+- `web/services/scheduler_service.py` — スケジューリングロジック全般
+- `web/routers/cron.py:30-39` — tick エンドポイント
+- `web/routers/schedule_router.py` — admin CRUD
+- `.github/workflows/cron-tick.yml` — 外部 cron
